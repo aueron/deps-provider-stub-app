@@ -1,0 +1,104 @@
+"Зависимость"
+type Dependency {
+  "Курсор"
+  cursor: BigInteger!
+  "Версия объекта назначения"
+  dstObjectVersion: ObjectVersion
+  "Состоит ли в обязательной группе?"
+  inMandatoryGroup: Boolean!
+  "Идентификатор источника информации о зависимости"
+  informationSourceId: Int!
+  "Количество альтернатив"
+  numberOfAlternatives: Int!
+  "Версия исходного объекта"
+  srcObjectVersion: ObjectVersion
+}
+
+"Источник информации"
+type InformationSource {
+  "Идентификатор источника"
+  id: Int!
+  "Название источника"
+  name: String
+}
+
+"Объект"
+type Object {
+  "Локальный (в рамках типа) идентификатор объекта"
+  localId: String
+  "Название объекта"
+  name: String
+}
+
+"Тип объекта"
+type ObjectType {
+  "Может ли быть исходным объектом?"
+  canBeSrcObject: Boolean!
+  "Идентификатор типа объекта"
+  id: String
+  "Название типа объекта"
+  name: String
+  "Список объектов"
+  objectDictionary: [Object]
+}
+
+"Версия объекта"
+type ObjectVersion {
+  "Локальный идентификатор объекта"
+  objectLocalId: String
+  "Идентификатор типа объекта"
+  objectTypeId: String
+  "Версия объекта"
+  version: String
+}
+
+"Query root"
+type Query {
+  "Получение списка зависимостей отвечающих условиям фильтрации"
+  dependencies(
+    "После курсора"
+    after: BigInteger = 0,
+    "Фильтр зависимостей"
+    filter: DependenciesFilter,
+    "Количество зависимостей в ответе"
+    first: Int = 250
+  ): [Dependency]
+  "Источники информации"
+  informationSources: [InformationSource]
+  "Список типов объектов"
+  objectTypes: [ObjectType]
+  "Список версий исходного объекта"
+  srcObjectVersions(objectLocalId: String!, objectTypeId: String!): [String]
+}
+
+"Условия фильтрации зависимостей"
+input DependenciesFilter {
+  "Версия объекта назначения"
+  dstObjectVersionFilter: DstObjectVersionFilterInput
+  "Зависимость имеет альтернативы?"
+  hasAlternatives: Boolean
+  "Идентификаторы источников информации"
+  informationSourcesIn: [Int]
+  "Зависимость в обязательной группе?"
+  isInMandatoryGroup: Boolean
+  "Версия исходного объекта"
+  srcObjectVersionFilter: SrcObjectVersionFilterInput
+}
+
+input DstObjectVersionFilterInput {
+  "Локальный идентификатор объекта назначения как"
+  withDstObjectLocalIdLike: String
+  "Идентификатор типа объекта назначения"
+  withDstObjectTypeId: String
+  "Версия объекта назначения как"
+  withDstObjectVersionLike: String
+}
+
+input SrcObjectVersionFilterInput {
+  "Локальный идентификатор объекта источника"
+  withSrcObjectLocalId: String
+  "Идентификатор типа объекта источника"
+  withSrcObjectTypeId: String
+  "Версия объекта источника"
+  withSrcObjectVersion: String
+}
